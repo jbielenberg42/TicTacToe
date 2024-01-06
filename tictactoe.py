@@ -34,9 +34,22 @@ class Board:
         self.num_rows = 3
         self.num_cols = 3
         self.pieces = np.empty((self.num_rows, self.num_cols), dtype=str)
-
+    
     def __str__(self) -> str:
-        return np.array2string(self.pieces)
+        board_str = ''
+        for i in range(self.num_rows):
+            for j in range(self.num_cols):
+                if marker:= self.pieces[i,j]:
+                    board_str += marker
+                else:
+                    board_str += ' '
+                if j < self.num_cols - 1:
+                    board_str += ' | '
+            board_str += '\n'
+            if i < self.num_rows - 1:
+                board_str += '-' * (self.num_cols * 4 - 3)
+                board_str += '\n'
+        return board_str 
 
 
 class Game:
@@ -78,21 +91,26 @@ class Game:
         """
         # check rows
         for i in range(self.board.num_rows):
-            if winning_player := self._evaluate_markers_for_win(self.board.pieces[i, :]):
+            if winning_player := self._evaluate_markers_for_win(
+                self.board.pieces[i, :]
+            ):
                 return winning_player
 
         # check cols
         for i in range(self.board.num_cols):
-            if winning_player := self._evaluate_markers_for_win(self.board.pieces[:, i]):
+            if winning_player := self._evaluate_markers_for_win(
+                self.board.pieces[:, i]
+            ):
                 return winning_player
 
         # Check Diagonals
         if winning_player := self._evaluate_markers_for_win(np.diag(self.board.pieces)):
             return winning_player
 
-        if winning_player := self._evaluate_markers_for_win(np.diag(np.fliplr(self.board.pieces))):
+        if winning_player := self._evaluate_markers_for_win(
+            np.diag(np.fliplr(self.board.pieces))
+        ):
             return winning_player
-        
 
     def place_piece(self, col_id: int, row_id: int, marker: str) -> None:
         """Places the marker at the specified coordinates
